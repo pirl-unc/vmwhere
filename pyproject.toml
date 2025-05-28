@@ -30,7 +30,7 @@ keywords = ["genotyping", "tandem repeats", "sequence decomposition", "ewing sar
 license = { text = "Apache-2.0" }
 
 [project.scripts]
-vmwhere = "main:vmhere"
+vmwhere = "main:profile_repeats"
 
 [tool.setuptools]
 include-package-data = true

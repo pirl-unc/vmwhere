@@ -1,7 +1,7 @@
 import argparse
 from pipeline.py import run_pipeline
 
-def vmhere():
+def profile_repeats():
     parser = argparse.ArgumentParser(
         description="Genotyping and sequence-resolved allele calling for tandem repeat regions"
     )
