@@ -11,15 +11,6 @@
 # limitations under the License.
 
 
-[build-system]
-requires = [
-    "pandas==2.1.1",
-    "pysam==0.22.1",
-    "biopython==1.84",
-    "python-Levenshtein==0.27.1"
-]
-
-
 [project]
 name = "vmwhere"
 version = "0.1.0"
@@ -27,16 +18,19 @@ description = "Genotyping and sequence-resolved allele calling for tandem repeat
 authors = [
     { name = "Sara Peterson", email = "skpet@unc.edu" }
 ]
-requires-python = "==3.11.9"
-readme = "README.md"
-keywords = [
-    "genotyping",
-    "tandem repeats",
-    "sequence decomposition",
-    "ewing sarcoma",
-    "microsatellite"
+requires-python = ">=3.11.9"
+dependencies = [
+    "pandas==2.1.1",
+    "pysam==0.22.1",
+    "biopython==1.84",
+    "python-Levenshtein==0.27.1"
 ]
+readme = "README.md"
+keywords = ["genotyping", "tandem repeats", "sequence decomposition", "ewing sarcoma", "microsatellite"]
+license = { text = "Apache-2.0" }
 
+[project.scripts]
+vmwhere = "main:vmhere"
 
 [tool.setuptools]
 include-package-data = true
@@ -44,11 +38,9 @@ include-package-data = true
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.setuptools.package-data]
-acelib = ["resources/models/*.pt"]
-
-[project.scripts]
-ace = "wmwhere.cli.cli_main:run"
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 [project.urls]
 "Homepage" = "https://github.com/pirl-unc/vmwhere"
