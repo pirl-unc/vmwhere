@@ -29,6 +29,8 @@ parser.add_argument("-d", "--bed_file", type=str, required=True, help="Headerles
 parser.add_argument("-o", "--output_dir", type=str, required=True, help="Output directory to save results")
 
 
+def run_pipeline():
+
 
 def run_process_reads():
 
@@ -38,8 +40,6 @@ def run_cluster_reads():
 
 def run_call_alleles():
 
-
-def run_pipeline():
 
 
 def run_visualize_microsatellite():
