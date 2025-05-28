@@ -1,6 +1,7 @@
 import pysam
 import argparse
 import pandas as pd
+from importlib.resources import files
 import glob 
 import os
 from Bio.Seq import Seq
@@ -631,7 +632,6 @@ def run_pipeline(
     bam_file,
     motif,
     fasta,
-    chr_map,
     cluster_dist,
     minor_thresh,
     homozygous_thresh,
@@ -643,12 +643,13 @@ def run_pipeline(
     BAM_FILE = bam_file
     MOTIF = motif
     FASTA_FILE = fasta
-    CHR_NAMES_MAPPING_FILE = chr_map
     BED_FILE = bed_file
     OUTPUT_DIR = output_dir
 
     # Load chromosome name mappings
-    chr_names = pd.read_csv(CHR_NAMES_MAPPING_FILE, header=None, sep=' ')
+    with files("vmwhere").joinpath("chr_mapping_simple.txt").open("r") as f:
+        chr_names = pd.read_csv(f, header=None, sep=' ')
+    
     global chr_map
     chr_map = dict(zip(chr_names[1], chr_names[0]))
 

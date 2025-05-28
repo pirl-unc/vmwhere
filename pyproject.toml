@@ -35,6 +35,9 @@ vmwhere = "main:profile_repeats"
 [tool.setuptools]
 include-package-data = true
 
+[tool.setuptools.package-data]
+vmwhere = ["chr_mapping_simple.txt"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
