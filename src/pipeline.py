@@ -279,7 +279,7 @@ def classify_variants_from_structure(structure, motif):
                 consecutive_motif_repeats_decomp = count_prefix
                 count_max_consecutive_motif_repeats_decomp = max(count_max_consecutive_motif_repeats_decomp, consecutive_motif_repeats_decomp)
             # If the difference is 1, count it as a SNP variant.
-            if is_single_nucleotide_variant(seq_string, motif):
+            elif hamming_distance(seq_string, motif) == 1:
                 snp_variant_count += count_prefix
             else:
                 # If the difference is more than 1, count it as a structural variant.
@@ -608,7 +608,7 @@ def process_single_chromosome(args):
     return chromosome_curr, query_read_results_df
 
 
-def identify_alleles(read_summary_df, minor_thresh=0.15, homozygous_thresh=0.8):
+def identify_alleles(read_summary_df, minor_thresh, major_thresh):
     """Determine alleles based on read support."""
 
     read_summary_df['total_region_reads'] = read_summary_df.groupby('region_id')['read_support'].transform('sum')
@@ -618,8 +618,8 @@ def identify_alleles(read_summary_df, minor_thresh=0.15, homozygous_thresh=0.8):
 
     for region_id, group in read_summary_df.groupby('region_id'):
         max_support = group['percent_support'].max()
-        if max_support >= homozygous_thresh:
-            filtered = group[group['percent_support'] >= homozygous_thresh]
+        if max_support >= major_thresh:
+            filtered = group[group['percent_support'] >= major_thresh]
         else:
             filtered = group[group['percent_support'] >= minor_thresh]
         allele_dfs.append(filtered)
@@ -634,7 +634,7 @@ def run_pipeline(
     fasta,
     cluster_dist,
     minor_thresh,
-    homozygous_thresh,
+    major_thresh,
     bed_file,
     output_dir
 ):
@@ -685,7 +685,7 @@ def run_pipeline(
     combined_results.to_csv(output_file_all_reads, sep=',', index=False)
 
     # Call alleles from clustered reads
-    sample_allele_df = identify_alleles(combined_results, minor_thresh, homozygous_thresh)
+    sample_allele_df = identify_alleles(combined_results, minor_thresh, major_thresh)
     output_file_alleles = os.path.join(OUTPUT_DIR, f'{SAMPLE_ID}_allele_calls_results.csv')
     sample_allele_df.to_csv(output_file_alleles, sep=',', index=False)
 
