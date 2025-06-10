@@ -334,7 +334,7 @@ def consolidate_reads_per_region(filtered_region_results):
     return consolidated_results
 
 
-def cluster_consolidated_reads_by_edit_distance(consolidated_results, cluster_dist):
+def cluster_consolidated_reads_by_edit_distance(consolidated_results, cluster_distance):
     """
     Clusters read_sequences based on Levenshtein distance and read support.
 
@@ -647,7 +647,7 @@ def run_pipeline(
     OUTPUT_DIR = output_dir
 
     # Load chromosome name mappings
-    with files("vmwhere").joinpath("chr_mapping_simple.txt").open("r") as f:
+    with files("src").joinpath("chr_mapping_simple.txt").open("r") as f:
         chr_names = pd.read_csv(f, header=None, sep=' ')
     
     global chr_map
@@ -688,8 +688,6 @@ def run_pipeline(
     sample_allele_df = identify_alleles(combined_results, minor_thresh, major_thresh)
     output_file_alleles = os.path.join(OUTPUT_DIR, f'{SAMPLE_ID}_allele_calls_results.csv')
     sample_allele_df.to_csv(output_file_alleles, sep=',', index=False)
-
-    print("Processing complete")
 
 
 
