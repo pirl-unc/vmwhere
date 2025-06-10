@@ -1,4 +1,4 @@
-vmwhere  \
+vmwhere profile \
 --sample_id 'test' \
 --bam_file ../path/to/sorted/bam \
 --motif GGAA \
@@ -6,6 +6,6 @@ vmwhere  \
 --bed_file ../path/to/regions/bed_file \
 --output_dir ../path/to/results/parent/dir \
 --cluster_dist 4 \
---minor_thresh 0.15 \
---homozygous_thresh 0.8
+--minor_threshold 0.20 \
+--major_threshold 0.8
 
