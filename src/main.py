@@ -12,7 +12,7 @@ def profile_repeats(args):
         bam_file=args.bam_file,
         motif=args.motif,
         fasta=args.fasta,
-        cluster_dist=args.cluster_distance,
+        cluster_distance=args.cluster_distance,
         minor_threshold=args.minor_threshold,
         major_threshold=args.major_threshold,
         bed_file=args.bed_file,
@@ -21,7 +21,7 @@ def profile_repeats(args):
 
 
 def visualize_region(args):
-    r_script_path = files("src").joinpath("region_visualization.R")
+    r_script_path = files("src").joinpath("visualize_region.R")
     subprocess.run([
         "Rscript",
         str(r_script_path),
@@ -52,7 +52,7 @@ def main():
     profile_parser.set_defaults(func=profile_repeats)
 
     # --- Subcommand: visualize ---
-    vis_parser = subparsers.add_parser("visualize", help="Visualize results for a specific region as stacked bar plot")
+    vis_parser = subparsers.add_parser("visualize", help="Visualize sequence resolved alleles for a specific region")
     vis_parser.add_argument("--sample_csv", required=True, help="Path to vmwhere output for the sample")
     vis_parser.add_argument("--chr", required=True, help="Chromosome the region of interest is on ie chr1")
     vis_parser.add_argument("--start", required=True, type=int, help = "The start index of the region")

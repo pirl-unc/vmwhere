@@ -357,7 +357,7 @@ def cluster_consolidated_reads_by_edit_distance(consolidated_results, cluster_di
         # Compare to each existing cluster centroid
         for idx, cluster in enumerate(clusters):
             dist = Levenshtein.distance(sequence, cluster['centroid'])
-            if dist < best_dist and dist <= cluster_dist:
+            if dist < best_dist and dist <= cluster_distance:
                 best_dist = dist
                 best_cluster_idx = idx
 
@@ -384,7 +384,7 @@ def cluster_consolidated_reads_by_edit_distance(consolidated_results, cluster_di
 
     return centroids_df_final
 
-def process_reads_overlapping_regions(motif, chr_map, regions, bamfile, reference_sequence):
+def process_reads_overlapping_regions(motif, chr_map, regions, bamfile, reference_sequence, cluster_distance):
     """
     Processes reads for regions specified in a BED-like dataframe.
 
@@ -397,7 +397,7 @@ def process_reads_overlapping_regions(motif, chr_map, regions, bamfile, referenc
       pd.DataFrame: DataFrame containing sequence resolved structure of reads overlapping each provided region.
     """
     # determine which chromosome bedfile we are processing
-    chrom = regions.iloc[1,0] # column zero contains the chromosome un ucsc naming
+    chrom = regions.iloc[0,0] # column zero contains the chromosome un ucsc naming
 
     ## determine ucsc or refseq naming of chromosomes in bam file
     if bamfile.references[0] in chr_map.keys():
@@ -432,7 +432,7 @@ def process_reads_overlapping_regions(motif, chr_map, regions, bamfile, referenc
         'read_sequence': []
         }
 
-    suss_dels=0
+    discarded_reads=0
     reverse_motif = str(Seq(motif).reverse_complement())
 
     # analyse one region at a time
@@ -445,23 +445,39 @@ def process_reads_overlapping_regions(motif, chr_map, regions, bamfile, referenc
         end_coord = int(regions.iloc[i, 2])  # Column 2 contains the end position
 
         # initialize an empty dictionary to store results for each region
+
+        # verify that there are enough reads overlapping the region
+        read_count = 0
+        for read in bamfile.fetch(chrom_bam, start_coord, end_coord):
+            if read.is_secondary:
+                continue
+            read_count += 1
+            if read_count >= 10: # don't care how many reads, just care more than 10
+                break
+
+        # skip the region if not enough reads
+        if read_count < 10:
+            print(f"skipping region {chrom_bam}:{start_coord}-{end_coord} ({region_id}) due to low read count of {read_count}")
+            continue
+
+        # initialize dictionary to store results for the region
         region_query_read_results = {
-        'chr': [],
-        'start': [],
-        'end': [],
-        'read_structure': [],
-        'max_consecutive_repeats': [],
-        'total_motif_repeats': [],
-        'total_length':[],
-        'motif_density' : [],
-        'snv_motifs': [],
-        'single_bp_between': [],
-        'mnv_motifs': [],
-        'multi_bp_inbetween' : [],
-        'reference_structure':[],
-        'read_sequence': [],
-        'region_id' : []
-        }
+                'chr': [],
+                'start': [],
+                'end': [],
+                'read_structure': [],
+                'max_consecutive_repeats': [],
+                'total_motif_repeats': [],
+                'total_length':[],
+                'motif_density' : [],
+                'snv_motifs': [],
+                'single_bp_between': [],
+                'mnv_motifs': [],
+                'multi_bp_inbetween' : [],
+                'reference_structure':[],
+                'read_sequence': [],
+                'region_id' : []
+                }
 
         # Fetch reads from BAM file overlapping current region
         for read in bamfile.fetch(chrom_bam, start_coord, end_coord):
@@ -549,7 +565,7 @@ def process_reads_overlapping_regions(motif, chr_map, regions, bamfile, referenc
                 region_query_read_results['read_sequence'].append(read_microsat_seq)
                 region_query_read_results['region_id'].append(region_id)
             else:
-                suss_dels += 1
+                discarded_reads += 1
 
         # collect all read_structures
         motif_occurance_list = region_query_read_results['read_structure']
@@ -558,11 +574,17 @@ def process_reads_overlapping_regions(motif, chr_map, regions, bamfile, referenc
 
         # filter out singleton reads
         filtered_region_read_results = filter_reads_with_low_support(motif_occurance_list, region_query_read_results_df)
+        filtered_count = len(filtered_region_read_results) # check that there are reads after verifying each read structure has at least 2 supporting reads
+
+        if filtered_count == 0:
+            print(f"skipping region {chrom_bam}:{start_coord}-{end_coord} ({region_id}) due to no concordance in reads")
+            continue
+
         # consolidate read results for each region where each row is a unique read structure and the read support is counted
         consolidated_region_read_results = consolidate_reads_per_region(filtered_region_read_results)
 
         # cluster reads that are within the specific edit distance to each other
-        clustered_region_read_results = cluster_consolidated_reads_by_edit_distance(consolidated_region_read_results, args.cluster_dist)
+        clustered_region_read_results = cluster_consolidated_reads_by_edit_distance(consolidated_region_read_results, cluster_distance)
 
         # add filtered region results to the complete chromosome dictionary results
         for column in clustered_region_read_results.columns:
@@ -570,7 +592,6 @@ def process_reads_overlapping_regions(motif, chr_map, regions, bamfile, referenc
 
     # provide a summary output for each chromosome in the log file
     print(f"Processed {len(regions)} regions on {chrom}")
-    print(f"Total reads after filtering processed on {chrom}: {len(chromosome_query_read_results['chr'])}")
 
     return pd.DataFrame(chromosome_query_read_results)
 
@@ -584,7 +605,7 @@ def process_single_chromosome(args):
     Returns:
         str: Name of the output file that was created for that chromosome
     """
-    chromosome_curr, regions_df, reference_sequence = args
+    chromosome_curr, regions_df, MOTIF, BAM_FILE, chr_map, reference_sequence, cluster_distance = args
 
     # Open BAM file
     try:
@@ -598,7 +619,8 @@ def process_single_chromosome(args):
         chr_map=chr_map,
         regions=regions_df,
         bamfile=bam,
-        reference_sequence=reference_sequence
+        reference_sequence=reference_sequence,
+        cluster_distance = cluster_distance
     )
 
     # Close the BAM file
@@ -608,7 +630,7 @@ def process_single_chromosome(args):
     return chromosome_curr, query_read_results_df
 
 
-def identify_alleles(read_summary_df, minor_thresh, major_thresh):
+def identify_alleles(read_summary_df, minor_threshold, major_threshold):
     """Determine alleles based on read support."""
 
     read_summary_df['total_region_reads'] = read_summary_df.groupby('region_id')['read_support'].transform('sum')
@@ -618,10 +640,10 @@ def identify_alleles(read_summary_df, minor_thresh, major_thresh):
 
     for region_id, group in read_summary_df.groupby('region_id'):
         max_support = group['percent_support'].max()
-        if max_support >= major_thresh:
-            filtered = group[group['percent_support'] >= major_thresh]
+        if max_support >= major_threshold:
+            filtered = group[group['percent_support'] >= major_threshold]
         else:
-            filtered = group[group['percent_support'] >= minor_thresh]
+            filtered = group[group['percent_support'] >= minor_threshold]
         allele_dfs.append(filtered)
 
     return pd.concat(allele_dfs, ignore_index=True)
@@ -632,9 +654,9 @@ def run_pipeline(
     bam_file,
     motif,
     fasta,
-    cluster_dist,
-    minor_thresh,
-    major_thresh,
+    cluster_distance,
+    minor_threshold,
+    major_threshold,
     bed_file,
     output_dir
 ):
@@ -649,8 +671,6 @@ def run_pipeline(
     # Load chromosome name mappings
     with files("src").joinpath("chr_mapping_simple.txt").open("r") as f:
         chr_names = pd.read_csv(f, header=None, sep=' ')
-    
-    global chr_map
     chr_map = dict(zip(chr_names[1], chr_names[0]))
 
     # Create output directory if it doesn't exist
@@ -667,7 +687,7 @@ def run_pipeline(
     process_args = []
     for chrom in chromosomes:
         chrom_regions = regions_df[regions_df[0] == chrom].copy()
-        process_args.append((chrom, chrom_regions, reference_sequence))
+        process_args.append((chrom, chrom_regions, MOTIF, BAM_FILE, chr_map, reference_sequence, cluster_distance))
 
     # Run each chromosome in parallel
     n_processes = len(chromosomes)
@@ -681,12 +701,12 @@ def run_pipeline(
     combined_results = pd.concat(results_dict.values(), ignore_index=True)
 
     # Save all read-level results
-    output_file_all_reads = os.path.join(OUTPUT_DIR, f'{SAMPLE_ID}_clustered_reads_results.csv')
+    output_file_all_reads = os.path.join(OUTPUT_DIR, f'{SAMPLE_ID}_clustered_results.csv')
     combined_results.to_csv(output_file_all_reads, sep=',', index=False)
 
     # Call alleles from clustered reads
-    sample_allele_df = identify_alleles(combined_results, minor_thresh, major_thresh)
-    output_file_alleles = os.path.join(OUTPUT_DIR, f'{SAMPLE_ID}_allele_calls_results.csv')
+    sample_allele_df = identify_alleles(combined_results, minor_threshold, major_threshold)
+    output_file_alleles = os.path.join(OUTPUT_DIR, f'{SAMPLE_ID}_allele_results.csv')
     sample_allele_df.to_csv(output_file_alleles, sep=',', index=False)
 
 
