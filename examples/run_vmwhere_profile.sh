@@ -24,13 +24,11 @@ vmwhere profile \
     --sample_id "example_sample" \
     --bam_file data/A673_sampled_reads.sorted.bam \
     --motif "GGAA" \
-    --fasta data/GCF_009914755.1_T2T-CHM13v2.0_genomic.fna \
+    --fasta data/GCF_009914755.1_T2T-CHM13v2.0_chr6_chr10.fasta \
     --cluster_distance 4 \
     --minor_threshold 0.20 \
     --major_threshold 0.80 \
     --bed_file data/T2T_regions.bed \
     --output_dir output/
-
-echo "Example run complete! Check output/ directory for example results."
 
 
