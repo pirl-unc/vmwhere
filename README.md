@@ -2,24 +2,31 @@
 
 VariantMotifwhere(VMwhere) performs several key analyses in tandem repeat regions of the genome including (1) repeat genoptying to identify expansion and contraction of motifs (2) motif centric sequence decompsition to determine motif variants and their location witin the tandem repeat (3) visualization of sequence resolved alleles at the repeat region.
 
+---
 
 ## Installation 
 
 VMwhere is available as a python package
 
-```
+```bash
 pip install vmwhere
 ``` 
 
-## Input Requirements
+---
+## Requirements
 
-- **BAM file**: Aligned sequencing reads (`--bam_file`)
-- **BED file**: Tab-delimited file of motif regions (no header) (`--bed_file`)
-- **Motif**: Nucleotide sequence of the motif of interest (e.g., `GGAA`) (`--motif`)
-- **Reference genome**: FASTA file (`--fasta`)
-- **Sample ID**: Unique identifier for the sample (`--sample_id`)
+- **Python** ≥ 3.11
+
+- **R** (≥ 4.0 recommended)  
+  Visualization depends on `visualize_region.R`. Install required R packages using:
+
+  ```bash
+  Rscript -e "install.packages(readLines('requirements-r.txt'))"
+  ```
+
 
 ---
+
 
 ## Example Usage 
 
@@ -43,10 +50,28 @@ This will:
 - Extract and decompose reads overlapping motif regions
 - Cluster read structures by edit distance
 - Call alleles with user-defined thresholds
-- Output `*_clustered_results.csv` and `*_allele_results.csv`
+- Output two files (1) `*_clustered_results.csv`: all sequence resolved reads and their clusters and (2) `*_allele_results.csv`: alleles called based on read support and major/minor thresholds
 
 
 Shell script to run provided example on two regions: [`run_vmwhere_profile.sh`]
+
+
+#### Input Parameter Details
+
+**Required Parameters:**
+- `--sample_id`: Unique identifier for your sample (used in output filenames).
+- `--bam_file`: Path to the **sorted** BAM file containing aligned reads (with indexed bam file in same directory).
+- `--motif`: The repeat motif to genotype (e.g., `GGAA`, `GCAT`).
+- `--fasta`: Path to the reference genome FASTA file (used for sequence context).
+- `--bed_file`: BED file with regions to query. Must have at least 4 columns: `chr`, `start`, `end`, and `region_id`.
+- `--output_dir`: Directory to write output files.
+
+**Optional Parameters:**
+- `--cluster_distance`: Maximum Levenshtein distance allowed to group reads into a cluster (default = motif length).
+- `--minor_threshold`: Minimum read support fraction required to call a **minor** allele (default = 0.20).
+- `--major_threshold`: Minimum read support fraction required to call a **major** allele (default = 0.80).
+
+---
 
 
 ### 2. Visualize a specific region
@@ -61,23 +86,9 @@ vmwhere visualize \
 
 This will:
 - Generate a stacked bar plot showing distinct read structures (alleles) and their read count
+- Output `.pdf`: visualization per region
 
 
 Shell script to run provided example on one profiled region: [`run_vmwhere_visualize.sh`]
 
----
-
-## Input Requirements
-
-- **BAM file**: Aligned and indexed sequencing reads (`--bam_file`)
-- **BED file**: Tab-delimited file of motif regions (no header) (`--bed_file`)
-- **Motif**: Nucleotide sequence of the motif of interest (e.g., `GGAA`) (`--motif`)
-- **Reference genome**: FASTA file (`--fasta`)
----
-
-##  Outputs
-
-- `*_clustered_results.csv`: All sequence-resolved reads and clusters
-- `*_allele_results.csv`: Filtered alleles per region with support
-- `.pdf`: Optional per-region visualizations
 
