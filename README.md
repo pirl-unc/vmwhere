@@ -21,7 +21,7 @@ pip install vmwhere
   Visualization depends on `visualize_region.R`. Install required R packages using:
 
   ```bash
-  Rscript -e "install.packages(readLines('requirements-r.txt'))"
+  Rscript -e "install.packages(readLines('requirements-r.txt'), repos='https://cloud.r-project.org')"
   ```
 
 
