@@ -20,7 +20,7 @@ fi
 
 # kick off profiling function
 vmwhere visualize \
-    --sample_csv output/example_sample_allele_calls_results.csv \
+    --sample_csv output/example_sample_allele_results.csv \
     --chr chr6 \
     --start 6706603 \
     --output_pdf output/chr6_example_region_visualization.pdf 
