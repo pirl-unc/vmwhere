@@ -20,10 +20,9 @@ fi
 
 
 # kick off profiling function
-vmwhere profile \
+vmwhere genotype \
     --sample_id "example_sample" \
     --bam_file data/A673_sampled_reads.sorted.bam \
-    --motif "GGAA" \
     --fasta data/GCF_009914755.1_T2T-CHM13v2.0_chr6_chr10.fasta \
     --cluster_distance 4 \
     --minor_threshold 0.20 \
