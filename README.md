@@ -86,9 +86,9 @@ Shell script to run provided example on two regions: [`run_vmwhere_profile.sh`]
 
 The output has the standard columns of a VCF file, but is returned as a TSV for simpler parsing. 
 
--- `CHROM` : chromosome
--- `POS` : starting index of the microsatellite
--- `ID` : unique microsatellite ID provided in the input bed file
+`CHROM` : chromosome  
+`POS` : starting index of the microsatellite  
+`ID` : unique microsatellite ID provided in the input bed file  
 -- `REF` : microsatellite reference sequence
 -- `ALT` : variant microsatellite sequence(s) in read (. if none present)
 -- `END` : ending index of the microsatellites
