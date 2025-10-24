@@ -19,7 +19,7 @@ if ! command -v vmwhere &> /dev/null; then
 fi
 
 
-# kick off profiling function
+# kick off genotyping function
 vmwhere genotype \
     --sample_id "example_sample" \
     --bam_file data/A673_sampled_reads.sorted.bam \
