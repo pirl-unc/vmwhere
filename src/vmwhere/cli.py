@@ -11,8 +11,9 @@ def find_microsatellites(args):
             motif=args.motif,
             fasta_file=args.fasta,
             repeats=args.perfect_repeats,
-            gap=args.max_gap
-            output_dir=args.output_dir
+            gap=args.max_gap,
+            output_dir=args.output_dir,
+            buffer=args.buffer_size
             )
 
 
@@ -51,16 +52,19 @@ def main():
     
     # --- Subcommand: find ---
     find_parser = subparsers.add_parser("find", help="Identify genomic coordinates of repeat microsatellite sequences based on a reference")
+    
     find_parser.add_argument("-m", "--motif", required=True)
     find_parser.add_argument("-r", "--perfect_repeats", type=int, default=2)
     find_parser.add_argument("-g", "--max_gap", type=int, default=50)
+    find_parser.add_argument("-b", "--buffer_size", type=int, default=50)
     find_parser.add_argument("-o", "--output_dir", required=True)
     find_parser.add_argument("-f", "--fasta", required=True)
-    find_parser.add_argument(func=find_microsatellites)
+    find_parser.set_defaults(func=find_microsatellites)
 
 
     # --- Subcommand: genotype ---
     profile_parser = subparsers.add_parser("genotype", help="Genotype microsatellites given a sample BAM file")
+    
     profile_parser.add_argument("-s", "--sample_id", required=True)
     profile_parser.add_argument("-b", "--bam_file", required=True)
     profile_parser.add_argument("-f", "--fasta", required=True)
@@ -73,6 +77,7 @@ def main():
 
     # --- Subcommand: visualize ---
     vis_parser = subparsers.add_parser("visualize", help="Visualize sequence resolved alleles for a specific region")
+    
     vis_parser.add_argument("--sample_tsv", required=True, help="Name for the sample")
     vis_parser.add_argument("--chr", required=True, help="Chromosome the region of interest is on ie chr1")
     vis_parser.add_argument("--start", required=True, type=int, help = "The start index of the region")

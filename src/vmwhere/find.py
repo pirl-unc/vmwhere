@@ -9,6 +9,9 @@ import logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 
+def find_motif_genomic_coordinates(sequence, motif, buffer_size):
+    """Find occurrences of a motif in a genomic sequence."""
+
     motif = Seq(motif)
     motif_str = str(motif)
     motif_len = len(motif)
@@ -98,7 +101,7 @@ def run_find(
         repeats,
         gap,
         fasta_file,
-        buffer
+        buffer,
         output_dir
         ):
 
