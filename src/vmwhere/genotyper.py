@@ -920,7 +920,7 @@ def run_genotyper(
     bam_file,
     fasta,
     cluster_distance,
-    minor_threhold,
+    minor_threshold,
     major_threshold,
     output_dir,
     num_processes
@@ -936,6 +936,8 @@ def run_genotyper(
     OUTPUT_DIR = output_dir
     NUM_PROCESSES = num_processes
     CLUSTER_DISTANCE = cluster_distance
+    MINOR_THRESHOLD = minor_threshold
+    MAJOR_THRESHOLD = major_threshold
 
     # load chromosome name mappings
     with files("vmwhere").joinpath("chr_mapping_simple.txt").open("r") as f:
@@ -991,7 +993,7 @@ def run_genotyper(
     combined_results = pd.concat(all_results, ignore_index=True)
     
     # perform allele calling 
-    sample_allele_df = identify_alleles(combined_results, minor_threhold, major_threshold)
+    sample_allele_df = identify_alleles(combined_results, MINOR_THRESHOLD, MAJOR_THRESHOLD)
 
     # convert to be a more appropriate format for tsv (region per row with allele separated values instead of allele per row)
     tsv_df = create_tsv_per_sample(sample_allele_df)

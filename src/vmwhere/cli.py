@@ -27,7 +27,8 @@ def genotype_microsatellites(args):
         minor_threshold=args.minor_threshold,
         major_threshold=args.major_threshold,
         bed_file=args.bed_file,
-        output_dir=args.output_dir
+        output_dir=args.output_dir,
+        num_processes=args.num_processes
     )
 
 
@@ -37,9 +38,9 @@ def visualize_microsatellite(args):
     subprocess.run([
         "Rscript",
         str(r_script_path),
-        args.sample_csv,
-        args.chr,
-        str(args.start),
+        args.genotype_tsv,
+        args.microsatellite_id,
+        args.min_allele_count,
         args.output_pdf], check=True)
     
     
@@ -65,23 +66,24 @@ def main():
     # --- Subcommand: genotype ---
     profile_parser = subparsers.add_parser("genotype", help="Genotype microsatellites given a sample BAM file")
     
-    profile_parser.add_argument("-s", "--sample_id", required=True)
-    profile_parser.add_argument("-b", "--bam_file", required=True)
-    profile_parser.add_argument("-f", "--fasta", required=True)
-    profile_parser.add_argument("-cl", "--cluster_distance", type=int, default=0)
-    profile_parser.add_argument("-mit", "--minor_threshold", type=float, default=0.20)
-    profile_parser.add_argument("-mat", "--major_threshold", type=float, default=0.80)
-    profile_parser.add_argument("-d", "--bed_file", required=True)
-    profile_parser.add_argument("-o", "--output_dir", required=True)
+    profile_parser.add_argument("--sample_id", required=True, help="Output file will be sample_id_vmwhere_results.tsv")
+    profile_parser.add_argument("--bed_file", required=True, help="Header free bed file with columns chr start end motif region_id")
+    profile_parser.add_argument("--bam_file", required=True, help="Sorted, indexed, sample bam file")
+    profile_parser.add_argument("--fasta", required=True, help="Path to reference fasta file")
+    profile_parser.add_argument("--cluster_distance", type=int, default=0, help="Edit distance to use when clustering reads prior to allele calling")
+    profile_parser.add_argument("--minor_threshold", type=float, default=0.20, help="Minimium locus read support (fraction) to be called an allele")
+    profile_parser.add_argument("--major_threshold", type=float, default=0.80, help="Read support (fraction) for calling homozygous microsatellites")
+    profile_parser.add_argument("--output_dir", required=True, help="Parent directory for genotyping results")
+    profile_parser.add_argument("--num_processes", type=int, default=24)
     profile_parser.set_defaults(func=genotype_microsatellites)
 
     # --- Subcommand: visualize ---
     vis_parser = subparsers.add_parser("visualize", help="Visualize sequence resolved alleles for a specific region")
     
-    vis_parser.add_argument("--sample_tsv", required=True, help="Name for the sample")
-    vis_parser.add_argument("--chr", required=True, help="Chromosome the region of interest is on ie chr1")
-    vis_parser.add_argument("--start", required=True, type=int, help = "The start index of the region")
-    vis_parser.add_argument("--output_pdf", required=True, help = "Output file name and path")
+    vis_parser.add_argument("-g", "--genotype_tsv", required=True, help="genotype results in vmwhere tsv format")
+    vis_parser.add_argument("-m", "--microsatellite_id", required=True, help="The unique region_id in the genotype output file")
+    vis_parser.add_argument("-o", "--output_pdf", required=True, help = "Output file path and name")
+    vis_parser.add_argument("-c", "--min_allele_count", required=True, default=0, help="Filter out low frequency alleles")
     vis_parser.set_defaults(func=visualize_microsatellite)
 
     # Parse args and dispatch

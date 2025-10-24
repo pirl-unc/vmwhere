@@ -87,7 +87,7 @@ def merge_adjacent_motifs(df, max_gap):
             'Perfect_Repeats': perfect_repeats,
         })
 
-    merged_df = df.groupby(['chrom', 'group'], group_keys=False).apply(merge_group, include_groups=True).reset_index(drop=True)
+    merged_df = df.groupby(['chrom', 'group']).apply(merge_group, include_groups=True).reset_index(drop=True)
     return merged_df
 
 def name_each_region(merged_df):
