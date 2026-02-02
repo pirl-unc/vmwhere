@@ -46,6 +46,7 @@ This will:
 - Output a bed file with the following columns: chr start end motif region_id
 
 #### Input Parameter Details 
+`--motif`: sequence you wish to find repeat/microsatellite coordinates of
 `--perfect_repeats`: minimium uninterrupted repeat number to be considered a microsatellite
 `--max_gap`:  maximium number of base pairs between microsatellites to be considered distinct
 
@@ -102,8 +103,8 @@ The output has the standard columns of a VCF file, but is returned as a TSV for 
 `MOTIF`: canonical motif  
 `GT` : genotype (e.g., 0/0 only reference alleles found, 0/1 one reference one alt allele found etc.)  
 `AL` : the length of the microsatellite allele in base pairs  
-`CN` : the copy number/repeat number of the canonical motif (consecutive and non-consecutive)  
-`CNM`: the maximum consecutive copy number/repeat number of the canonical motif (e.g., 6GGAA_1GGAT_2GGAA = 6)  
+`CN` : the repeat length (repeat number) of the primary motif (consecutive and non-consecutive occurances)  
+`CNM`: the maximum consecutive repeat length (repeat number) of the primary motif (e.g., 6GGAA_1GGAT_2GGAA = 6)  
 `MD`: the motif density/purity of the allele (fraction of base pairs contributing to canonical motif)  
 `DS_READ` : decomposed sequence of the microsatellite alleles   
 `DS_REF`: decomposed sequence of the reference sequence  
