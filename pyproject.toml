@@ -29,6 +29,12 @@ readme = "README.md"
 keywords = ["genotyping", "tandem repeats", "sequence decomposition", "ewing sarcoma", "microsatellite"]
 license = { text = "Apache-2.0" }
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0"
+]
+
 [project.scripts]
 vmwhere = "vmwhere.cli:main"
 
