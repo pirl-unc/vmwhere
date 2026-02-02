@@ -46,9 +46,9 @@ This will:
 - Output a bed file with the following columns: chr start end motif region_id
 
 #### Input Parameter Details 
-`--motif`: sequence you wish to find repeat/microsatellite coordinates of
-`--perfect_repeats`: minimium uninterrupted repeat number to be considered a microsatellite
-`--max_gap`:  maximium number of base pairs between microsatellites to be considered distinct
+`--motif`: sequence you wish to find repeat/microsatellite coordinates for   
+`--perfect_repeats`: minimium uninterrupted repeat number to be considered a microsatellite   
+`--max_gap`:  maximium number of base pairs between microsatellites to be considered distinct   
 
 ### 2. Genotype microsatellites
 
