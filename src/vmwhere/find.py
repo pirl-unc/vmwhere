@@ -63,31 +63,26 @@ def merge_adjacent_motifs(df, max_gap):
         return df
 
     df = df.sort_values(by=['chrom', 'Motif_Start']).reset_index(drop=True)
-    df['group'] = (df['Motif_Start'] > (df['Motif_End'].shift() + max_gap)).cumsum()
 
-    # determined merged group bounds
-    def merge_group(group):
-        contig = group['chrom'].iloc[0]
-        motif_val = group['motif'].iloc[0]
-        buf_start = group['Buffer_Start'].min()
-        buf_end = group['Buffer_End'].max()
-        motif_start = group['Motif_Start'].min()
-        motif_end = group['Motif_End'].max()
-        total_repeats = group['Total_Repeats'].sum()
-        perfect_repeats = group['Perfect_Repeats'].max()
+    # Calculate gaps, but reset at chromosome boundaries
+    prev_chrom = df['chrom'].shift()
+    prev_end = df['Motif_End'].shift()
 
-        return pd.Series({
-            'chrom': contig,
-            'Buffer_Start': buf_start,
-            'Buffer_End': buf_end,
-            'motif': motif_val,
-            'Motif_Start': motif_start,
-            'Motif_End': motif_end,
-            'Total_Repeats': total_repeats,
-            'Perfect_Repeats': perfect_repeats,
-        })
+    # A new group starts when: different chromosome OR gap exceeds max_gap
+    new_group = (df['chrom'] != prev_chrom) | (df['Motif_Start'] > (prev_end + max_gap))
+    df['group'] = new_group.cumsum()
 
-    merged_df = df.groupby(['chrom', 'group']).apply(merge_group, include_groups=True).reset_index(drop=True)
+    # Aggregate merged groups using built-in aggregation functions
+    merged_df = df.groupby(['chrom', 'group'], as_index=False).agg({
+        'Buffer_Start': 'min',
+        'Buffer_End': 'max',
+        'motif': 'first',
+        'Motif_Start': 'min',
+        'Motif_End': 'max',
+        'Total_Repeats': 'sum',
+        'Perfect_Repeats': 'sum'
+    }).drop(columns=['group'])
+
     return merged_df
 
 def name_each_region(merged_df):
@@ -158,4 +153,8 @@ def run_find(
     df_merged = name_each_region(df_merged) 
     
     df_final = df_merged[['chrom', 'Buffer_Start', 'Buffer_End', 'motif', 'region_name']]
-    df_final.to_csv(os.path.join(output_dir, f'microsatellite_coordinates.bed'), sep='\t', index=False, header=False)
+    output_path = os.path.join(output_dir, 'microsatellite_coordinates.bed')
+    df_final.to_csv(output_path, sep='\t', index=False, header=False)
+
+    logging.info(f"Found {len(df_final)} microsatellite regions. Output written to {output_path}")
+    return df_final
