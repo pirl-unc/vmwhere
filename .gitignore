@@ -89,3 +89,6 @@ venv.bak/
 
 # PyPI configuration file
 .pypirc
+
+# Auto-generated version file (setuptools-scm)
+src/vmwhere/_version.py

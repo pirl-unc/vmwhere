@@ -13,7 +13,7 @@
 
 [project]
 name = "vmwhere"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Genotyping and sequence-resolved allele calling for tandem repeat regions"
 authors = [
     { name = "Sara Peterson", email = "skpet@unc.edu" }
@@ -47,8 +47,11 @@ vmwhere = ["chr_mapping_simple.txt", "region_visualization.R"]
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools_scm]
+version_file = "src/vmwhere/_version.py"
+
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project.urls]
