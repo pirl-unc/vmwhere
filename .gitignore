@@ -92,3 +92,6 @@ venv.bak/
 
 # Auto-generated version file (setuptools-scm)
 src/vmwhere/_version.py
+
+# Claude Code
+CLAUDE.md
