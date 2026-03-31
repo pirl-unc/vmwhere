@@ -1,6 +1,6 @@
 # VMwhere? VMhere!
 
-VariantMotifwhere(VMwhere) performs several key analyses in tandem repeat regions of the genome from long-read sequencing data including (1) repeat genoptying to identify allele length and repeat length and (2) motif centric sequence decompsition to determine motif variants and their location witin the tandem repeat and (3) provides the ability to visualize sequence resolved alleles at the repeat region.
+VariantMotifwhere(vmwhere) performs several key analyses in tandem repeat regions of the genome from long-read sequencing data including (1) repeat genotyping to identify allele length and repeat length and (2) motif centric sequence decompsition to determine motif variants and their location witin the tandem repeat and (3) provides the ability to visualize sequence resolved alleles at the repeat region.
 
 
 ---
