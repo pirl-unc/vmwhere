@@ -122,7 +122,7 @@ The output follows VCF-style conventions but is written as a TSV for simpler par
 | `AL` | Allele length in base pairs |
 | `CN` | Total copy number of the canonical motif (consecutive and interrupted occurrences) |
 | `CNM` | Maximum uninterrupted copy number of the canonical motif (e.g., `6GGAA_1GGAT_2GGAA` = 6) |
-| `MD` | Motif purity — fraction of allele base pairs matching the canonical motif |
+| `MD` | Motif density — fraction of allele base pairs matching the canonical motif |
 | `DS_READ` | Decomposed sequence of the allele |
 | `DS_REF` | Decomposed sequence of the reference |
 | `RS` | Read support for the allele |
