@@ -42,7 +42,7 @@ vmwhere = "vmwhere.cli:main"
 include-package-data = true
 
 [tool.setuptools.package-data]
-vmwhere = ["chr_mapping_simple.txt", "region_visualization.R"]
+vmwhere = ["chr_mapping_simple.txt", "visualize_region.R"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
