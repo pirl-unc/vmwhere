@@ -1,13 +1,10 @@
 import pysam
-import argparse
 import pandas as pd
 from importlib.resources import files
-import glob
 import os
 from Bio.Seq import Seq
 from Bio import SeqIO
 import multiprocessing as mp
-from multiprocessing import Pool
 import Levenshtein
 import re
 
@@ -526,7 +523,6 @@ def process_reads_overlapping_regions(chr_map, regions, bamfile, reference_seque
         'RS': []
         }
 
-    suss_dels=0
     reverse_motif = str(Seq(motif).reverse_complement())
         
     # analyse one region at a time
@@ -730,7 +726,7 @@ def process_reads_overlapping_regions(chr_map, regions, bamfile, reference_seque
                 
             # perform decomposition of the read sequence and identify variants present 
             read_structure, allele_length, read_microsat_seq = decompose_seq_with_motif_anchors(query_seq_microsat, motif)
-            perfect_motif_count_decomp, count_max_consecutive_motif_repeats_decomp, snp_variant_count, multi_bp_variant_count, single_bp_inbetween_count, multi_bp_inbetween_count = classify_variants_from_structure(read_structure, motif)
+            perfect_motif_count_decomp, count_max_consecutive_motif_repeats_decomp, _, _, _, _ = classify_variants_from_structure(read_structure, motif)
 
             # determine total number of prefect motifs present and max consecutive by counting them in the original string
             max_consecutive_repeats = count_max_consecutive_motifs(query_seq_microsat, motif)
@@ -952,7 +948,6 @@ def run_genotyper(
 
     # Load BED file with all regions
     regions_df = pd.read_csv(BED_FILE, sep='\t', header=None)
-    chromosomes = regions_df[0].unique()
 
     # determine all motifs present in the bed file
     all_motifs = regions_df[4].unique()
