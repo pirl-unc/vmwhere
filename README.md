@@ -4,26 +4,29 @@
 
 # variant motif where? variant motif here!
 
-VariantMotifwhere(vmwhere) performs several key analyses in tandem repeat regions of the genome from long-read sequencing data including (1) repeat genotyping to identify allele length and repeat length and (2) motif centric sequence decompsition to determine motif variants and their location witin the tandem repeat and (3) provides the ability to visualize sequence resolved alleles at the repeat region.
+VMwhere (VariantMotifwhere) is a tool for analyzing tandem repeat (microsatellite) regions from long-read sequencing data. It provides three core capabilities:
 
+1. **Discovery** — identify microsatellite coordinates in a reference genome
+2. **Genotyping** — call allele length, copy number, and motif-level sequence decomposition at each locus
+3. **Visualization** — generate sequence-resolved allele frequency plots
 
 ---
 
-## Installation 
+## Installation
 
-VMwhere is available as a python package
+VMwhere is available as a Python package:
 
 ```bash
 pip install vmwhere
-``` 
+```
 
 ---
 ## Requirements
 
-- **Python** ≥ 3.11
+- **Python** >= 3.12.4
 
-- **R** (≥ 4.0 recommended)  
-  Visualization depends on `visualize_region.R`. Install required R packages using:
+- **R** (>= 4.0) — required only for the `visualize` subcommand.
+  Install required R packages:
 
   ```bash
   Rscript -e "install.packages(readLines('requirements-r.txt'), repos='https://cloud.r-project.org')"
@@ -31,30 +34,39 @@ pip install vmwhere
 
 ---
 
-## Example Usage 
+## Usage
 
 ### 1. Find microsatellites
 
+Scan a reference FASTA for tandem repeat regions matching a given motif.
+
 ```bash
 vmwhere find \
-  --motif GGAA
-  --max_gap 100
-  --perfect_repeats 4
-  --buffer_size 50
-  --fasta_file 
-  --output_dir 
+  --motif GGAA \
+  --perfect_repeats 4 \
+  --max_gap 50 \
+  --buffer_size 50 \
+  --fasta data/reference.fasta \
+  --output_dir output/
 ```
 
-This will:
-- Find repeat occurances of the motif of interest 
-- Output a bed file with the following columns: chr start end motif region_id
+This outputs a BED file (`microsatellite_coordinates.bed`) with columns: `chr`, `start`, `end`, `region_id`, `motif`.
 
-#### Input Parameter Details 
-`--motif`: sequence you wish to find repeat/microsatellite coordinates for   
-`--perfect_repeats`: minimium uninterrupted repeat number to be considered a microsatellite   
-`--max_gap`:  maximium number of base pairs between microsatellites to be considered distinct   
+#### Parameters
+| Flag | Description |
+|------|-------------|
+| `--motif` / `-m` | Repeat motif sequence to search for (e.g., `GGAA`) |
+| `--fasta` / `-f` | Path to the reference genome FASTA |
+| `--output_dir` / `-o` | Output directory |
+| `--perfect_repeats` / `-r` | Minimum number of uninterrupted tandem repeats to call a microsatellite (default: 2) |
+| `--max_gap` / `-g` | Maximum base pairs between adjacent microsatellites before they are treated as distinct loci (default: 50) |
+| `--buffer_size` / `-b` | Base pairs to extend beyond the outermost repeat on each side (default: 50) |
+
+See [`examples/run_vmwhere_find.sh`](examples/run_vmwhere_find.sh) for a runnable example.
 
 ### 2. Genotype microsatellites
+
+Extract reads overlapping each locus, decompose sequences into motif and non-motif segments, cluster reads by Levenshtein distance, and call alleles.
 
 ```bash
 vmwhere genotype \
@@ -65,71 +77,69 @@ vmwhere genotype \
   --cluster_distance 4 \
   --minor_threshold 0.20 \
   --major_threshold 0.80 \
-  --output_dir output/
-  --num_processes 24 
+  --output_dir output/ \
+  --num_processes 2
 ```
 
-This will:
-- Extract, genotype, and decompose reads overlapping the microsatellites in the bed file
-- Cluster reads by edit distance
-- Call alleles on clustered reads
-- Output a TSV file with the microsatellite genotype
+See [`examples/run_vmwhere_genotype.sh`](examples/run_vmwhere_genotype.sh) for a runnable example.
+
+#### Parameters
+
+**Required:**
+
+| Flag | Description |
+|------|-------------|
+| `--sample_id` | Sample identifier (used in output filename) |
+| `--bam_file` | Path to sorted, indexed BAM file |
+| `--fasta` | Path to the reference genome FASTA |
+| `--bed_file` | Headerless BED file with columns: `chr`, `start`, `end`, `region_id`, `motif` |
+| `--output_dir` | Output directory (file will be named `<sample_id>_vmwhere_results.tsv`) |
+
+**Optional:**
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--cluster_distance` | Maximum Levenshtein distance for grouping reads into a cluster | 0 |
+| `--minor_threshold` | Minimum read support fraction to call a minor allele | 0.20 |
+| `--major_threshold` | Minimum read support fraction to call a homozygous genotype | 0.80 |
+| `--num_processes` | Number of parallel processes | 24 |
 
 
-Shell script to run provided genotyping example on two microsatellites: [`run_vmwhere_profile.sh`]
+#### Output TSV columns
+
+The output follows VCF-style conventions but is written as a TSV for simpler parsing.
+
+| Column | Description |
+|--------|-------------|
+| `CHROM` | Chromosome |
+| `POS` | Start coordinate of the microsatellite |
+| `ID` | Locus identifier from the input BED file |
+| `REF` | Reference allele sequence |
+| `ALT` | Alternate allele sequence(s); `.` if none |
+| `END` | End coordinate of the microsatellite |
+| `MOTIF` | Canonical repeat motif |
+| `GT` | Genotype (e.g., `0/0` = homozygous reference, `0/1` = heterozygous) |
+| `AL` | Allele length in base pairs |
+| `CN` | Total copy number of the canonical motif (consecutive and interrupted occurrences) |
+| `CNM` | Maximum uninterrupted copy number of the canonical motif (e.g., `6GGAA_1GGAT_2GGAA` = 6) |
+| `MD` | Motif purity — fraction of allele base pairs matching the canonical motif |
+| `DS_READ` | Decomposed sequence of the allele |
+| `DS_REF` | Decomposed sequence of the reference |
+| `RS` | Read support for the allele |
 
 
-#### Input Parameter Details
+### 3. Visualize alleles at a microsatellite
 
-**Required Parameters:**
-`--sample_id`: Unique identifier for your sample (used in output filename).  
-`--bam_file`: Path to the **sorted** BAM file containing aligned reads (with indexed bam file in same directory).  
-`--fasta`: Path to the reference genome FASTA.  
-`--bed_file`: Headerless BED file with microsatellites to genotype. Must have at least 5 columns: `chr`, `start`, `end`, `region_id`, `motif`.  
-`--output_dir`: Directory to write output files (file will be named sample_id_vmwhere_results.tsv).  
-
-**Optional Parameters:**
-`--cluster_distance`: Maximum Levenshtein distance allowed to group reads into a cluster (default =  canonical motif length).  
-`--minor_threshold`: Minimum read support fraction required to call a **minor** allele (default = 0.20).  
-`--major_threshold`: Minimum read support fraction required to call a **major** allele (default = 0.80).  
-
-
-#### Output TSV Details
-
-The output has the standard columns of a VCF file, but is returned as a TSV for simpler parsing. 
-
-`CHROM` : chromosome  
-`POS` : starting index of the microsatellite  
-`ID` : unique microsatellite ID provided in the input bed file  
-`REF` : microsatellite reference sequence  
-`ALT` : variant microsatellite sequence(s) in read (. if none present)  
-`END` : ending index of the microsatellites  
-`MOTIF`: canonical motif  
-`GT` : genotype (e.g., 0/0 only reference alleles found, 0/1 one reference one alt allele found etc.)  
-`AL` : the length of the microsatellite allele in base pairs  
-`CN` : the repeat length (repeat number) of the primary motif (consecutive and non-consecutive occurances)  
-`CNM`: the maximum consecutive repeat length (repeat number) of the primary motif (e.g., 6GGAA_1GGAT_2GGAA = 6)  
-`MD`: the motif density/purity of the allele (fraction of base pairs contributing to canonical motif)  
-`DS_READ` : decomposed sequence of the microsatellite alleles   
-`DS_REF`: decomposed sequence of the reference sequence  
-`RS`: read support for the allele  
-
-
-### 3. Visualize alleles at microsatellites
+Generate a PDF showing sequence-resolved allele structures and their frequencies at a given locus.
 
 ```bash
 vmwhere visualize \
-  --tsv output/example_sample_allele_results.csv \
-  --region_id chr6 \
-  --start 6706603 \
-  --output_pdf output/chr6_example_region_visualization.pdf
+  --genotype_tsv output/example_sample_vmwhere_results.tsv \
+  --microsatellite_id chr6_region_41 \
+  --min_allele_count 0 \
+  --output_pdf output/chr6_region_41_visualization.pdf
 ```
 
-This will:
-- Generate a plot showing distinct read structures (alleles) and along with the allele frequencies
-- Output `.pdf`: visualization per region
-
-
-Shell script to run provided visualization example on one microsatellite: [`run_vmwhere_visualize.sh`]
+See [`examples/run_vmwhere_visualize.sh`](examples/run_vmwhere_visualize.sh) for a runnable example.
 
 

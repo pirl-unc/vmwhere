@@ -152,7 +152,7 @@ def run_find(
     df_merged = pd.concat(merged_all, ignore_index=True)
     df_merged = name_each_region(df_merged) 
     
-    df_final = df_merged[['chrom', 'Buffer_Start', 'Buffer_End', 'motif', 'region_name']]
+    df_final = df_merged[['chrom', 'Buffer_Start', 'Buffer_End', 'region_name', 'motif']]
     output_path = os.path.join(output_dir, 'microsatellite_coordinates.bed')
     df_final.to_csv(output_path, sep='\t', index=False, header=False)
 

@@ -67,7 +67,7 @@ def main():
     profile_parser = subparsers.add_parser("genotype", help="Genotype microsatellites given a sample BAM file")
     
     profile_parser.add_argument("--sample_id", required=True, help="Output file will be sample_id_vmwhere_results.tsv")
-    profile_parser.add_argument("--bed_file", required=True, help="Header free bed file with columns chr start end motif region_id")
+    profile_parser.add_argument("--bed_file", required=True, help="Header free bed file with columns chr start end region_id motif")
     profile_parser.add_argument("--bam_file", required=True, help="Sorted, indexed, sample bam file")
     profile_parser.add_argument("--fasta", required=True, help="Path to reference fasta file")
     profile_parser.add_argument("--cluster_distance", type=int, default=0, help="Edit distance to use when clustering reads prior to allele calling")
