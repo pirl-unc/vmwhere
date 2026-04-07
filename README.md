@@ -4,7 +4,7 @@
 
 # variant motif where? variant motif here!
 
-VMwhere (VariantMotifwhere) is a tool for analyzing tandem repeat (microsatellite) regions from long-read sequencing data. It provides three core capabilities:
+vmwhere (VariantMotifwhere) is a tool for analyzing tandem repeat (microsatellite) regions from long-read sequencing data. It provides three core capabilities:
 
 1. **Discovery** — identify microsatellite coordinates in a reference genome
 2. **Genotyping** — call allele length, repeath length, and motif-level sequence decomposition at each locus
