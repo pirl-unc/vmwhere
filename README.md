@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/pirl-unc/vmwhere/main/vmwhere_sky_logo.png" alt="logo" width="400"/>
+  <img src="https://raw.githubusercontent.com/pirl-unc/vmwhere/main/vmwhere_logo_sky.png" alt="logo" width="400"/>
 </div>
 
 # variant motif where? variant motif here!
