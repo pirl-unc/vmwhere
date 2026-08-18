@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21999505.svg)](https://doi.org/10.5281/zenodo.21999505)
+
 <div align="center">
   <img src="https://raw.githubusercontent.com/pirl-unc/vmwhere/main/vmwhere_logo_sky.png" alt="logo" width="400"/>
 </div>
@@ -11,6 +13,13 @@ vmwhere (VariantMotifwhere) is a tool for analyzing tandem repeat (microsatellit
 3. **Visualization** — generate sequence-resolved allele frequency plots
 
 ---
+## Citation
+
+If you use vmwhere, please cite:
+
+> Peterson S, Massie AM, Wang J, Rubinsteyn A, Davis I. vmwhere: a tool for
+> motif-resolved genotyping of tetrameric microsatellites from long-read
+> sequencing data. Zenodo. 2026. https://doi.org/10.5281/zenodo.21999505
 
 ## Installation
 
