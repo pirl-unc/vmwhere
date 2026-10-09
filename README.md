@@ -15,11 +15,9 @@ vmwhere (VariantMotifwhere) is a tool for analyzing tandem repeat (microsatellit
 ---
 ## Citation
 
-If you use vmwhere, please cite:
+If you use vmwhere, please cite our pre-print:
 
-> Peterson S, Massie AM, Wang J, Rubinsteyn A, Davis I. vmwhere: a tool for
-> motif-resolved genotyping of tetrameric microsatellites from long-read
-> sequencing data. Zenodo. 2026. https://doi.org/10.5281/zenodo.21999505
+> > Peterson SK, Massie AM, Rubinsteyn A, Wang JR, Davis IJ. Long-read analysis of tetrameric microsatellites with vmwhere supports GGAA repeat length–dependent chromatin state association in Ewing sarcoma. *bioRxiv* (2026). https://doi.org/10.64898/2026.04.08.717017
 
 ## Installation
 
