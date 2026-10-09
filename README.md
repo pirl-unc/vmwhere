@@ -1,4 +1,5 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21999505.svg)](https://doi.org/10.5281/zenodo.21999505)
+[![Preprint](https://img.shields.io/badge/bioRxiv-10.64898%2F2026.04.08.717017-b31b1b)](https://doi.org/10.64898/2026.04.08.717017)
+[![Zenodo](https://zenodo.org/badge/DOI/10.5281/zenodo.21999505.svg)](https://doi.org/10.5281/zenodo.21999505)
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/pirl-unc/vmwhere/main/vmwhere_logo_sky.png" alt="logo" width="400"/>
@@ -17,7 +18,7 @@ vmwhere (VariantMotifwhere) is a tool for analyzing tandem repeat (microsatellit
 
 If you use vmwhere, please cite our pre-print:
 
-> > Peterson SK, Massie AM, Rubinsteyn A, Wang JR, Davis IJ. Long-read analysis of tetrameric microsatellites with vmwhere supports GGAA repeat length–dependent chromatin state association in Ewing sarcoma. *bioRxiv* (2026). https://doi.org/10.64898/2026.04.08.717017
+> Peterson SK, Massie AM, Rubinsteyn A, Wang JR, Davis IJ. Long-read analysis of tetrameric microsatellites with vmwhere supports GGAA repeat length–dependent chromatin state association in Ewing sarcoma. *bioRxiv* (2026). https://doi.org/10.64898/2026.04.08.717017
 
 ## Installation
 
