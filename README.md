@@ -1,5 +1,7 @@
-[![Preprint](https://img.shields.io/badge/bioRxiv-10.64898%2F2026.04.08.717017-b31b1b)](https://doi.org/10.64898/2026.04.08.717017)
-[![Zenodo](https://zenodo.org/badge/DOI/10.5281/zenodo.21999505.svg)](https://doi.org/10.5281/zenodo.21999505)
+[![Preprint](https://img.shields.io/badge/bioRxiv-10.64898%2F2026.04.08.717017-D9A441)](https://doi.org/10.64898/2026.04.08.717017)
+[![Zenodo](https://img.shields.io/badge/Zenodo-10.5281%2Fzenodo.21999505-2A7F7F)](https://doi.org/10.5281/zenodo.21999505)
+[![PyPI](https://img.shields.io/pypi/v/vmwhere?color=C8642A)](https://pypi.org/project/vmwhere/)
+[![Tests](https://github.com/pirl-unc/vmwhere/actions/workflows/ci.yml/badge.svg)](https://github.com/pirl-unc/vmwhere/actions/workflows/ci.yml)
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/pirl-unc/vmwhere/main/vmwhere_logo_sky.png" alt="logo" width="400"/>
