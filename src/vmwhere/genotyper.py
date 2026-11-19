@@ -822,8 +822,17 @@ def process_single_chromosome(args):
     return motif, chromosome_curr, query_read_results_df
 
 
+MAX_ALLELES_PER_LOCUS = 2  # calls are diploid
+
+
 def identify_alleles(read_summary_df, minor_thresh=0.20, homozygous_thresh=0.8):
-    """Determine alleles based on read support."""
+    """
+    Determine alleles based on read support.
+
+    At most two alleles are called per locus. When more than two pass the minor
+    threshold, the two with the most read support are kept (ties go to the allele
+    listed first) and their original order is preserved.
+    """
 
     read_summary_df['RC'] = read_summary_df.groupby('ID')['RS'].transform('sum')
     read_summary_df['PS'] = read_summary_df['RS'] / read_summary_df['RC']
@@ -836,6 +845,9 @@ def identify_alleles(read_summary_df, minor_thresh=0.20, homozygous_thresh=0.8):
             filtered = group[group['PS'] >= homozygous_thresh]
         else:
             filtered = group[(group['PS'] >= minor_thresh)]
+        if len(filtered) > MAX_ALLELES_PER_LOCUS:
+            best_supported = filtered['RS'].nlargest(MAX_ALLELES_PER_LOCUS, keep='first').index
+            filtered = filtered.loc[filtered.index.isin(best_supported)]
         allele_dfs.append(filtered)
 
     return pd.concat(allele_dfs, ignore_index=True)
